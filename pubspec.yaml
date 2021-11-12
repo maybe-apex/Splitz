@@ -47,7 +47,7 @@ flutter:
 
     # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/vectors/banner-blurred.png
+      - assets/vectors/
     #   - images/a_dot_burr.jpeg
     #   - images/a_dot_ham.jpeg
 
@@ -66,11 +66,13 @@ flutter:
     - family: playfair
       fonts:
         - asset: assets/fonts/PlayfairDisplay-Bold.ttf
-        - weight: 700
+          weight: 700
         - asset: assets/fonts/PlayfairDisplay-Regular.ttf
         - asset: assets/fonts/PlayfairDisplay-Medium.ttf
         - asset: assets/fonts/PlayfairDisplay-Italic.ttf
         - asset: assets/fonts/PlayfairDisplay-BoldItalic.ttf
+          style: italic
+          weight: 700
     - family: gothic
       fonts:
         - asset: assets/fonts/GothicA1-Bold.ttf

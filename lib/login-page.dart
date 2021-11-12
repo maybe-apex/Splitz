@@ -10,7 +10,6 @@ class LoginPage extends StatelessWidget {
       body: LayoutBuilder(builder: (context, constraints) {
         return SingleChildScrollView(
           child: Container(
-            // height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               image: DecorationImage(
                 alignment: Alignment.topCenter,
@@ -126,6 +125,7 @@ class LoginPage extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                              SizedBox(height: 30),
                             ],
                           ),
                         ),
