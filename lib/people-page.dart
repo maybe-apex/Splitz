@@ -36,7 +36,7 @@ class _PeoplePageState extends State<PeoplePage> {
                 ),
               ),
               InkWell(
-                // onTap: () => Navigator.pop(context),
+                onTap: () => Navigator.pop(context),
                 child: SvgPicture.asset("assets/vectors/add-contact.svg"),
               ),
             ],

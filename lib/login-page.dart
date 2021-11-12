@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'forgot-password.dart';
+import 'main-wrapper.dart';
 import 'constants.dart';
+import 'signup-page.dart';
 
 class LoginPage extends StatelessWidget {
   static String route = "LoginPage";
@@ -7,137 +10,147 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                alignment: Alignment.topCenter,
-                image: AssetImage("assets/vectors/banner-blurred.png"),
-                fit: BoxFit.fitWidth,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  alignment: Alignment.topCenter,
+                  image: AssetImage("assets/vectors/banner-blurred.png"),
+                  fit: BoxFit.fitWidth,
+                ),
               ),
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 30, top: 80),
-                    child: Text(
-                      "Splitz",
-                      style: TextStyle(
-                        fontFamily: 'playfair',
-                        color: Colors.white,
-                        fontSize: 64,
-                        fontWeight: FontWeight.w700,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 30, top: 80),
+                      child: Text(
+                        "Splitz",
+                        style: TextStyle(
+                          fontFamily: 'playfair',
+                          color: Colors.white,
+                          fontSize: 64,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 50, right: 50, top: 30),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          topRight: Radius.circular(40)),
-                      color: LTBGCOLOR,
-                    ),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(bottom: 40),
-                          child: Text(
-                            "Log-in",
-                            style: TextStyle(
-                              fontFamily: 'playfair',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 45,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        EmailPasswordForm(
-                          title: "Email",
-                        ),
-                        SizedBox(height: 30),
-                        EmailPasswordForm(
-                          title: "Password",
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
+                    Container(
+                      padding: EdgeInsets.only(left: 50, right: 50, top: 30),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(40),
+                            topRight: Radius.circular(40)),
+                        color: LTBGCOLOR,
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 40),
                             child: Text(
-                              "Forgot Password ?",
+                              "Log-in",
                               style: TextStyle(
-                                color: Color(0xffA1A1A1),
+                                fontFamily: 'playfair',
                                 fontWeight: FontWeight.w700,
+                                fontSize: 45,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(35),
-                                  ),
-                                  shadowColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 110, vertical: 15),
-                                  primary: kGreen,
-                                ),
-                                child: Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                          EmailPasswordForm(
+                            title: "Email",
+                          ),
+                          SizedBox(height: 30),
+                          EmailPasswordForm(
+                            title: "Password",
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () => Navigator.pushNamed(
+                                  context, ForgotPassword.route),
+                              child: Text(
+                                "Forgot Password ?",
+                                style: TextStyle(
+                                  color: Color(0xffA1A1A1),
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              SizedBox(height: 15),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Don't have an account yet ?",
-                                    style: TextStyle(
-                                        color: Color(0xffA1A1A1),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 15),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, MainWrapper.route);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(35),
+                                    ),
+                                    shadowColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 110, vertical: 15),
+                                    primary: kGreen,
                                   ),
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      "Sign-up",
-                                      style: TextStyle(
-                                          color: Color(0xffA1A1A1),
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 15),
+                                  child: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 30),
-                            ],
+                                ),
+                                SizedBox(height: 15),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Don't have an account yet ?",
+                                      style: TextStyle(
+                                          color: Color(0xffA1A1A1),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pushNamed(
+                                          context, SingUpPage.route),
+                                      child: Text(
+                                        "Sign-up",
+                                        style: TextStyle(
+                                            color: Color(0xffA1A1A1),
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

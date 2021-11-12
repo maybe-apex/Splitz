@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:splitz/groups-page.dart';
+import 'package:splitz/new-transaction-page.dart';
 import 'people-page.dart';
 import 'constants.dart';
 
@@ -11,6 +13,14 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
+  Widget currentPage(currentIndex) {
+    return currentIndex == 0
+        ? PeoplePage()
+        : currentIndex == 1
+            ? GroupsPage()
+            : PeoplePage();
+  }
+
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class _MainWrapperState extends State<MainWrapper> {
             Radius.circular(12),
           ),
         ),
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, NewTransaction.route),
         child: Container(
           decoration: BoxDecoration(
             boxShadow: [
@@ -83,7 +93,7 @@ class _MainWrapperState extends State<MainWrapper> {
         ],
       ),
       body: SingleChildScrollView(
-        child: PeoplePage(),
+        child: currentPage(currentIndex),
       ),
     );
   }
