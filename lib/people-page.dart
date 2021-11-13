@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'constants.dart';
+import 'package:splitz/secondary-user-profile-page.dart';
+import 'cache/constants.dart';
 
 class PeoplePage extends StatefulWidget {
   @override
@@ -132,60 +133,64 @@ class UserTab extends StatelessWidget {
   UserTab({required this.image, required this.balance, required this.name});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                        color: Color(0xffA1A1A1).withOpacity(0.25),
-                        blurRadius: 4,
-                        offset: Offset(0, 4)),
-                  ],
-                  color: kOffWhite,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(4),
+    return InkWell(
+      onTap: () =>
+          Navigator.of(context).pushNamed(SecondaryUserProfilePage.route),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: Color(0xffA1A1A1).withOpacity(0.25),
+                          blurRadius: 4,
+                          offset: Offset(0, 4)),
+                    ],
+                    color: kOffWhite,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(4),
+                    ),
                   ),
+                  child: SvgPicture.asset(image),
                 ),
-                child: SvgPicture.asset(image),
-              ),
-              SizedBox(width: 15),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  name,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: kOffWhite),
-                ),
-              )
-            ],
-          ),
-          Text(
-            balance == 0
-                ? "Settled up"
-                : balance > 0
-                    ? "owes you\n₹$balance"
-                    : "you owe\n₹${-balance}",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: balance == 0
-                  ? kOffWhite
-                  : balance > 0
-                      ? kGreen.withOpacity(0.8)
-                      : kRed,
+                SizedBox(width: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: kOffWhite),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
+            Text(
+              balance == 0
+                  ? "Settled up"
+                  : balance > 0
+                      ? "owes you\n₹$balance"
+                      : "you owe\n₹${-balance}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: balance == 0
+                    ? kOffWhite
+                    : balance > 0
+                        ? kGreen.withOpacity(0.8)
+                        : kRed,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

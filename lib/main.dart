@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/adjust-split-wrapper.dart';
-import 'package:splitz/constants.dart';
-import 'package:splitz/forgot-password.dart';
-import 'package:splitz/main-wrapper.dart';
-import 'package:splitz/new-transaction-page.dart';
-import 'package:splitz/signup-page.dart';
+import 'adjust-split-wrapper.dart';
+import 'cache/constants.dart';
+import 'forgot-password.dart';
+import 'main-wrapper.dart';
+import 'new-transaction-page.dart';
+import 'secondary-user-profile-page.dart';
+import 'signup-page.dart';
 import 'login-page.dart';
 
 void main() {
@@ -22,9 +23,11 @@ class Splitz extends StatelessWidget {
           MainWrapper.route: (context) => MainWrapper(),
           NewTransaction.route: (context) => NewTransaction(),
           AdjustSplitWrapper.route: (context) => AdjustSplitWrapper(),
+          SecondaryUserProfilePage.route: (context) =>
+              SecondaryUserProfilePage(),
         },
         theme:
             ThemeData(fontFamily: 'gothic', scaffoldBackgroundColor: BGCOLOR),
-        initialRoute: AdjustSplitWrapper.route);
+        initialRoute: MainWrapper.route);
   }
 }

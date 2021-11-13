@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'constants.dart';
+import 'cache/constants.dart';
 
 class AdjustSplitByPercentage extends StatefulWidget {
   @override

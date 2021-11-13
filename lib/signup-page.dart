@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'constants.dart';
+import 'cache/constants.dart';
 
 class SingUpPage extends StatelessWidget {
   static String route = "Signup";

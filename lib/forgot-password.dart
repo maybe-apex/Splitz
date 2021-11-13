@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'constants.dart';
+import 'cache/constants.dart';
 
 class ForgotPassword extends StatelessWidget {
   static String route = "ForgotPassword";

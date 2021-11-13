@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:splitz/constants.dart';
+import 'package:splitz/adjust-split-wrapper.dart';
+import 'package:splitz/cache/constants.dart';
 
 DateTime pickedDate = DateTime.now();
 
@@ -152,7 +153,8 @@ class _NewTransactionState extends State<NewTransaction> {
                         fontWeight: FontWeight.bold),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(AdjustSplitWrapper.route),
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     child: Container(

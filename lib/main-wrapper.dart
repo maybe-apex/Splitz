@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:splitz/groups-page.dart';
 import 'package:splitz/new-transaction-page.dart';
 import 'people-page.dart';
-import 'constants.dart';
+import 'cache/constants.dart';
 
 class MainWrapper extends StatefulWidget {
   static String route = "MainWrapper";
