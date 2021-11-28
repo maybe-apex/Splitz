@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'cache/constants.dart';
+import 'cache/data-processing.dart';
+
+TextEditingController emailController = TextEditingController();
 
 class ForgotPassword extends StatelessWidget {
   static String route = "ForgotPassword";
@@ -82,6 +86,7 @@ class ForgotPassword extends StatelessWidget {
                                   ),
                                 ),
                                 TextFormField(
+                                  controller: emailController,
                                   // obscureText: title != "Email",
                                   style: TextStyle(
                                     fontSize: 13,
@@ -109,7 +114,18 @@ class ForgotPassword extends StatelessWidget {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                final auth = FirebaseAuth.instance;
+                                if (emailValidator(emailController.text) ==
+                                    null) {
+                                  showSnackBar(context,
+                                      'Reset email has been sent to your email');
+                                  await auth.sendPasswordResetEmail(
+                                      email: emailController.text);
+                                } else
+                                  showSnackBar(context,
+                                      'Please enter valid email address.');
+                              },
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(35),
@@ -141,4 +157,24 @@ class ForgotPassword extends StatelessWidget {
       ),
     );
   }
+}
+
+void showSnackBar(BuildContext context, String text) {
+  final scaffold = ScaffoldMessenger.of(context);
+  scaffold.showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 3,
+      backgroundColor: kRed.withOpacity(0.7),
+      content: Text(
+        text,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      action: SnackBarAction(
+        label: 'OK',
+        onPressed: scaffold.hideCurrentSnackBar,
+        textColor: Colors.black54,
+      ),
+    ),
+  );
 }

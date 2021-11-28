@@ -1,11 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'forgot-password.dart';
 import 'main-wrapper.dart';
 import 'cache/constants.dart';
 import 'signup-page.dart';
 
-class LoginPage extends StatelessWidget {
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+
+class LoginPage extends StatefulWidget {
   static String route = "LoginPage";
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  void loginCallback() async {
+    try {
+      setState(() {
+        // loading = true;
+      });
+      bool validID = false;
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .where('email', isEqualTo: emailController.text)
+          .get()
+          .then((value) => validID = value.docs.isNotEmpty);
+      if (validID) {
+        final _auth = FirebaseAuth.instance;
+        final newUser = await _auth.signInWithEmailAndPassword(
+            email: emailController.text, password: passwordController.text);
+        Navigator.pushNamed(context, MainWrapper.route);
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        // loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +127,7 @@ class LoginPage extends StatelessWidget {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
+                                    loginCallback();
                                     Navigator.pushNamed(
                                         context, MainWrapper.route);
                                   },
@@ -156,7 +191,6 @@ class LoginPage extends StatelessWidget {
 }
 
 class EmailPasswordForm extends StatelessWidget {
-  TextEditingController emailController = TextEditingController();
   final String title;
   EmailPasswordForm({required this.title});
   @override
@@ -174,7 +208,7 @@ class EmailPasswordForm extends StatelessWidget {
           ),
         ),
         TextFormField(
-          controller: emailController,
+          controller: title == "Email" ? emailController : passwordController,
           obscureText: title != "Email",
           style: TextStyle(
             fontSize: 15,

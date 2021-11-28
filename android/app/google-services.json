@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1047864711479",
+    "project_id": "splitz-cc80c",
+    "storage_bucket": "splitz-cc80c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047864711479:android:40fb445ad4992e4d2862b2",
+        "android_client_info": {
+          "package_name": "com.oop.splitz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047864711479-is0011og2ddkcqhgl7q9hq6tnmvb4c3e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgLD5YQFHjVq7n5Bd_Y_ayT89-nBZMkK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047864711479-is0011og2ddkcqhgl7q9hq6tnmvb4c3e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

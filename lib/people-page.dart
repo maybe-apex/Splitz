@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:splitz/login-page.dart';
 import 'package:splitz/secondary-user-profile-page.dart';
 import 'cache/constants.dart';
 
@@ -19,6 +21,13 @@ class _PeoplePageState extends State<PeoplePage> {
 
   @override
   Widget build(BuildContext context) {
+    void logoutCallback() {
+      final auth = FirebaseAuth.instance;
+      auth.signOut();
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+    }
+
     return Container(
       margin: EdgeInsets.only(left: 30, top: 60, right: 30),
       child: Column(
@@ -37,7 +46,8 @@ class _PeoplePageState extends State<PeoplePage> {
                 ),
               ),
               InkWell(
-                onTap: () => Navigator.pop(context),
+                // onTap: () => Navigator.pop(context),
+                onTap: logoutCallback,
                 child: SvgPicture.asset("assets/vectors/add-contact.svg"),
               ),
             ],

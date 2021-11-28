@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:splitz/groups-page.dart';
 import 'package:splitz/new-transaction-page.dart';
+import 'package:splitz/statistics-page.dart';
 import 'people-page.dart';
 import 'cache/constants.dart';
 
@@ -18,35 +19,38 @@ class _MainWrapperState extends State<MainWrapper> {
         ? PeoplePage()
         : currentIndex == 1
             ? GroupsPage()
-            : PeoplePage();
+            : StatisticsPage();
   }
 
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: kYellow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(12),
-          ),
-        ),
-        onPressed: () => Navigator.pushNamed(context, NewTransaction.route),
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: kYellow,
-                blurRadius: 10,
-                spreadRadius: 8,
-                offset: Offset(0, 4),
+      floatingActionButton: currentIndex == 2
+          ? null
+          : FloatingActionButton(
+              backgroundColor: kYellow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(12),
+                ),
               ),
-            ],
-          ),
-          child: SvgPicture.asset("assets/vectors/add-expense.svg"),
-        ),
-      ),
+              onPressed: () =>
+                  Navigator.pushNamed(context, NewTransaction.route),
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: kYellow,
+                      blurRadius: 10,
+                      spreadRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: SvgPicture.asset("assets/vectors/add-expense.svg"),
+              ),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.white,
         unselectedItemColor: kGrey,

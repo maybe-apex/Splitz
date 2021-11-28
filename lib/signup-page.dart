@@ -1,10 +1,60 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'cache/constants.dart';
+import 'cache/data-processing.dart';
 
-class SingUpPage extends StatelessWidget {
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+TextEditingController contactNumberController = TextEditingController();
+TextEditingController firstNameController = TextEditingController();
+TextEditingController lastNameController = TextEditingController();
+
+String? uid = '';
+
+class SingUpPage extends StatefulWidget {
   static String route = "Signup";
+
+  @override
+  State<SingUpPage> createState() => _SingUpPageState();
+}
+
+class _SingUpPageState extends State<SingUpPage> {
+  void singUpCallback() async {
+    final auth = FirebaseAuth.instance;
+    final firestore = FirebaseFirestore.instance;
+    try {
+      setState(() {
+        // loading = true;
+      });
+      print(emailController.text);
+      print(passwordController.text);
+      final newUser = await auth.createUserWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+      if (newUser.user != null) {
+        uid = newUser.user?.uid;
+        setState(() {
+          // loading = false;
+        });
+        int contactNumber =
+            parseIntFromString('${contactNumberController.text}');
+        print(contactNumber);
+        await firestore.collection('/Users').doc(uid).set({
+          'FirstName': firstNameController.text,
+          'LastName': lastNameController.text,
+          'ContactNumber': contactNumber,
+          'Email': emailController.text,
+        });
+        Navigator.pop(context);
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        // loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +131,7 @@ class SingUpPage extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: TextFormField(
+                                        controller: firstNameController,
                                         // obscureText: title != "Email",
                                         style: TextStyle(
                                           fontSize: 13,
@@ -108,6 +159,7 @@ class SingUpPage extends StatelessWidget {
                                     SizedBox(width: 15),
                                     Expanded(
                                       child: TextFormField(
+                                        controller: lastNameController,
                                         // obscureText: title != "Email",
                                         style: TextStyle(
                                           fontSize: 13,
@@ -149,6 +201,7 @@ class SingUpPage extends StatelessWidget {
                                   ),
                                 ),
                                 TextFormField(
+                                  controller: contactNumberController,
                                   // obscureText: title != "Email",
                                   style: TextStyle(
                                     fontSize: 13,
@@ -187,6 +240,7 @@ class SingUpPage extends StatelessWidget {
                                   ),
                                 ),
                                 TextFormField(
+                                  controller: emailController,
                                   // obscureText: title != "Email",
                                   style: TextStyle(
                                     fontSize: 13,
@@ -225,6 +279,7 @@ class SingUpPage extends StatelessWidget {
                                   ),
                                 ),
                                 TextFormField(
+                                  controller: passwordController,
                                   // obscureText: title != "Email",
                                   style: TextStyle(
                                     fontSize: 13,
@@ -252,7 +307,7 @@ class SingUpPage extends StatelessWidget {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: singUpCallback,
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(35),

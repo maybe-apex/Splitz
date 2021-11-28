@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'adjust-split-wrapper.dart';
 import 'cache/constants.dart';
@@ -8,7 +11,9 @@ import 'secondary-user-profile-page.dart';
 import 'signup-page.dart';
 import 'login-page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(Splitz());
 }
 
@@ -28,6 +33,6 @@ class Splitz extends StatelessWidget {
         },
         theme:
             ThemeData(fontFamily: 'gothic', scaffoldBackgroundColor: BGCOLOR),
-        initialRoute: MainWrapper.route);
+        initialRoute: '/');
   }
 }
