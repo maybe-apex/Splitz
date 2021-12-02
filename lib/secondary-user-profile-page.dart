@@ -6,7 +6,7 @@ import 'new-transaction-page.dart';
 class SecondaryUserProfilePage extends StatelessWidget {
   static String route = "SecondaryUserProfilePage";
   List transactions = [
-    ["Mon\n07", "Post Midsem Outing", 1411.12],
+    // ["Mon\n07", "Post Midsem Outing", 1411.12],
     ["Sat\n04", "CellPhone Bill", -1000],
     ["Thr\n02", "Dominos", 0],
     ["Mon\n07", "Post Midsem Outing", 1411.12],
