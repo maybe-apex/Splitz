@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:splitz/login-page.dart';
+import 'package:splitz/cache/enumerators.dart';
+import 'package:splitz/cache/local-data.dart';
+import 'package:splitz/logic/search-helper.dart';
 import 'package:splitz/secondary-user-profile-page.dart';
 import 'cache/constants.dart';
 
@@ -19,15 +22,60 @@ class _PeoplePageState extends State<PeoplePage> {
     });
   }
 
+  void logoutCallback() {
+    FirebaseAuth.instance.signOut();
+  }
+
+  var queryResultSet = [];
+  var tempSearchStore = [];
+
+  initiateSearch(String value) {
+    if (value.length == 0) {
+      setState(() {
+        queryResultSet = [];
+        tempSearchStore = [];
+      });
+    }
+    var capitalizedValue =
+        value.substring(0, 1).toUpperCase() + value.substring(1);
+    if (queryResultSet.length == 0 && value.length == 1) {
+      SearchHelper().searchByName(value).then((QuerySnapshot docs) {
+        for (int i = 0; i < docs.docs.length; i++) {
+          queryResultSet.add(docs.docs[i].data());
+        }
+        print(queryResultSet);
+      });
+    } else {
+      tempSearchStore = [];
+      queryResultSet.forEach((element) {
+        if (element['FirstName'].startsWith(capitalizedValue)) {
+          setState(() {
+            tempSearchStore.add(element);
+          });
+        }
+      });
+    }
+  }
+
+  Widget buildResultCard(data) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 2,
+      child: Container(
+        child: Text(
+          data['FirstName'],
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    void logoutCallback() {
-      final auth = FirebaseAuth.instance;
-      auth.signOut();
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
-    }
-
     return Container(
       margin: EdgeInsets.only(left: 30, top: 60, right: 30),
       child: Column(
@@ -54,6 +102,9 @@ class _PeoplePageState extends State<PeoplePage> {
           ),
           SizedBox(height: 14),
           TextField(
+            onChanged: (val) {
+              initiateSearch(val);
+            },
             decoration: InputDecoration(
               // isDense: true,
               contentPadding:
@@ -85,6 +136,15 @@ class _PeoplePageState extends State<PeoplePage> {
             ),
           ),
           SizedBox(height: 10),
+          // GridView.count(
+          //   padding: EdgeInsets.only(left: 10, right: 10),
+          //   crossAxisCount: 2,
+          //   crossAxisSpacing: 4,
+          //   mainAxisSpacing: 4,
+          //   primary: false,
+          //   shrinkWrap: true,
+          //   children: tempSearchStore.map((e) => buildResultCard(e)).toList(),
+          // ),
           Row(
             children: [
               FilterButton(
@@ -114,22 +174,15 @@ class _PeoplePageState extends State<PeoplePage> {
             ],
           ),
           SizedBox(height: 30),
-          UserTab(
-            name: "Ananya Palla",
-            image: "assets/vectors/female-avatar-1.svg",
-            balance: 2576,
-          ),
-          SizedBox(height: 20),
-          UserTab(
-            name: "Vivek Patel",
-            image: "assets/vectors/male-avatar-1.svg",
-            balance: -388,
-          ),
-          SizedBox(height: 20),
-          UserTab(
-            name: "Bhavya Mishra",
-            image: "assets/vectors/female-avatar-2.svg",
-            balance: 0,
+          ListView.separated(
+            shrinkWrap: true,
+            itemBuilder: (context, index) => UserTab(
+              name: puAcquaintances[index].name,
+              balance: 2576.0,
+              image: getAvatarByID(puAcquaintances[index].avatarID),
+            ),
+            separatorBuilder: (context, int) => SizedBox(height: 20),
+            itemCount: puAcquaintances.length,
           ),
         ],
       ),

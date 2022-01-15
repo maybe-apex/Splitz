@@ -1,11 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:splitz/adjust-split-wrapper.dart';
 import 'package:splitz/cache/constants.dart';
-
-DateTime pickedDate = DateTime.now();
+import 'package:splitz/cache/enumerators.dart';
+import 'package:splitz/cache/local-data.dart';
+import 'package:splitz/logic/transaction-helper.dart';
+import 'package:splitz/models/general-users.dart';
 
 class NewTransaction extends StatefulWidget {
   static String route = "NewTransaction";
@@ -15,182 +19,288 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
+  DateTime _pickedDate = DateTime.now();
   void datePicker() async {
     DateTime? date = await showDatePicker(
       context: context,
-      initialDate: pickedDate,
+      initialDate: _pickedDate,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
     );
     if (date != null) {
       setState(() {
-        pickedDate = date;
+        _pickedDate = date;
       });
     }
   }
+  // void addTransaction() {
+  //   transactions.add(
+  //     GeneralTransaction(
+  //       creator: pu,
+  //       title: th.transactionDescriptionController.text,
+  //       amount: double.parse(th.transactionAmountController.text),
+  //       timeStamp: _pickedDate,
+  //       involvedUsers: th.involvedUsers,
+  //       splitType: SplitType.Equally,
+  //       settlements: [],
+  //       uid: '567567',
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final transactionHelper = Provider.of<TransactionHelper>(context);
+    final _currentSplit = transactionHelper.currentSplit;
+    List<GeneralUser> _involvedUsers = transactionHelper.involvedUsers;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            children: [
-              Text(
-                "New Transaction",
-                style: TextStyle(
-                  fontFamily: 'playfair',
-                  color: Colors.white,
-                  fontSize: 64,
-                  fontStyle: FontStyle.italic,
-                  // fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 30),
-              TextField(
-                cursorColor: Colors.white,
-                decoration: InputDecoration(
-                  prefixIconConstraints:
-                      BoxConstraints(minWidth: 0, minHeight: 0),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      "With you and:",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  // isDense: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  filled: true,
-                  fillColor: Color(0xff31303A),
-                  hintText: "Enter names of people involved",
-                  hintStyle: TextStyle(
-                      color: Color(0xffA1A1A1),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0x00003670), width: 30),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0x00003670), width: 30),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 40),
-              InputForm(
-                iconLocation: "assets/vectors/reciept.svg",
-                hintText: "Transaction Description",
-              ),
-              SizedBox(height: 30),
-              InputForm(
-                iconLocation: "assets/vectors/rupee.svg",
-                hintText: "0.00",
-              ),
-              SizedBox(height: 30),
-              Row(
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: 60),
-                    child: SvgPicture.asset("assets/vectors/calendar.svg"),
-                  ),
-                  SizedBox(width: 10),
-                  DatePicker(callback: datePicker),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
                 children: [
                   Text(
-                    "Paid by",
+                    "New Transaction",
                     style: TextStyle(
-                        fontSize: 14,
-                        color: kOffWhite.withOpacity(0.7),
-                        fontWeight: FontWeight.bold),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                      child: Text(
-                        "you",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          width: 2,
-                          color: Color(0XFF413F49),
-                        ),
-                        color: Color(0XFF1D1C23),
-                      ),
+                      fontFamily: 'playfair',
+                      color: Colors.white,
+                      fontSize: 64,
+                      fontStyle: FontStyle.italic,
+                      // fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(
-                    "and split",
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: kOffWhite.withOpacity(0.7),
-                        fontWeight: FontWeight.bold),
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(AdjustSplitWrapper.route),
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                      child: Text(
-                        "equally",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          width: 2,
-                          color: Color(0XFF413F49),
+                  SizedBox(height: 30),
+                  TypeAheadField<GeneralUser?>(
+                    textFieldConfiguration: TextFieldConfiguration(
+                      maxLines: null,
+                      style: TextStyle(color: kOffWhite),
+                      cursorColor: kGrey,
+                      decoration: InputDecoration(
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 0, minHeight: 0),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: SingleChildScrollView(
+                            // scrollDirection: Axis.horizontal,
+                            child: Text(
+                              "With you and:",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
-                        color: Color(0XFF1D1C23),
+                        // isDense: true,
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        filled: true,
+                        fillColor: Color(0xff31303A),
+                        hintText: "Enter names of people involved",
+                        hintStyle: TextStyle(
+                            color: Color(0xffA1A1A1),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Color(0x00003670), width: 30),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(6),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Color(0x00003670), width: 30),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(6),
+                          ),
+                        ),
                       ),
                     ),
+                    hideSuggestionsOnKeyboardHide: true,
+                    suggestionsCallback: (String query) =>
+                        List.of(puAcquaintances)
+                            .where(
+                              (element) => element.name.toLowerCase().contains(
+                                    query.toLowerCase(),
+                                  ),
+                            )
+                            .toList(),
+                    itemBuilder: (context, GeneralUser? suggestions) {
+                      final user = suggestions!;
+                      return ListTile(
+                        dense: true,
+                        tileColor: Color(0xff31303A),
+                        textColor: kOffWhite,
+                        title: Text(user.name),
+                      );
+                    },
+                    noItemsFoundBuilder: (context) => ListTile(
+                      dense: true,
+                      tileColor: Color(0xff31303A),
+                      textColor: kOffWhite,
+                      title: Text('No User Found'),
+                    ),
+                    onSuggestionSelected: (GeneralUser? selectedUser) =>
+                        Provider.of<TransactionHelper>(context, listen: false)
+                            .addInvolvedUsers(selectedUser!),
                   ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 10),
+                    child: Wrap(
+                      runSpacing: 10,
+                      spacing: 6,
+                      alignment: WrapAlignment.start,
+                      children: _involvedUsers
+                          .map(
+                            (user) => InkWell(
+                              onTap: () => Provider.of<TransactionHelper>(
+                                      context,
+                                      listen: false)
+                                  .removeInvolvedUsers(user),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(4),
+                                  ),
+                                  color: Color(0xff31303A),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 8),
+                                child: Text(
+                                  user.name.split(' ')[0],
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  InputForm(
+                    fieldName: 'transactionDescription',
+                    callback: transactionHelper.setTransactionTitle,
+                  ),
+                  SizedBox(height: 30),
+                  InputForm(
+                    fieldName: 'amount',
+                    callback: transactionHelper.setTotalAmount,
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minWidth: 60),
+                        child: SvgPicture.asset("assets/vectors/calendar.svg"),
+                      ),
+                      SizedBox(width: 10),
+                      DatePicker(
+                        callback: datePicker,
+                        pickedDate: _pickedDate,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Paid by",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: kOffWhite.withOpacity(0.7),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                          child: Text(
+                            "you",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              width: 2,
+                              color: Color(0XFF413F49),
+                            ),
+                            color: Color(0XFF1D1C23),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "and split",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: kOffWhite.withOpacity(0.7),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      InkWell(
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(AdjustSplitWrapper.route),
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                          child: Text(
+                            getSplitNameByType(_currentSplit).toLowerCase() +
+                                '.',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              width: 2,
+                              color: Color(0XFF413F49),
+                            ),
+                            color: Color(0XFF1D1C23),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ExitConfirmButtons(
+                        label: "Exit",
+                        callback: () => {},
+                      ),
+                      ExitConfirmButtons(
+                        label: "Confirm Transaction",
+                        // callback: addTransaction,
+                        callback: () {},
+                      ),
+                    ],
+                  )
                 ],
               ),
-              SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ExitConfirmButtons(
-                    label: "Exit",
-                  ),
-                  ExitConfirmButtons(label: "Confirm Transaction"),
-                ],
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -200,11 +310,12 @@ class _NewTransactionState extends State<NewTransaction> {
 
 class ExitConfirmButtons extends StatelessWidget {
   final String label;
-  ExitConfirmButtons({required this.label});
+  final VoidCallback callback;
+  ExitConfirmButtons({required this.label, required this.callback});
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pop(context),
+      onTap: callback,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10),
         decoration: BoxDecoration(
@@ -233,44 +344,10 @@ class ExitConfirmButtons extends StatelessWidget {
   }
 }
 
-class DatePickerWrapper extends StatefulWidget {
-  @override
-  _DatePickerWrapperState createState() => _DatePickerWrapperState();
-}
-
-class _DatePickerWrapperState extends State<DatePickerWrapper> {
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    void datePicker() async {
-      DateTime? date = await showDatePicker(
-        context: context,
-        initialDate: pickedDate,
-        firstDate: DateTime(DateTime.now().year - 1),
-        lastDate: DateTime(DateTime.now().year + 1),
-      );
-      if (date != null) {
-        setState(() {
-          pickedDate = date;
-        });
-      }
-    }
-
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          DatePicker(callback: datePicker),
-        ],
-      ),
-    );
-  }
-}
-
 class DatePicker extends StatelessWidget {
   final VoidCallback callback;
-  DatePicker({required this.callback});
+  final DateTime pickedDate;
+  DatePicker({required this.callback, required this.pickedDate});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -310,26 +387,42 @@ class DatePicker extends StatelessWidget {
 }
 
 class InputForm extends StatelessWidget {
-  final String hintText, iconLocation;
-  InputForm({required this.hintText, required this.iconLocation});
+  final String fieldName;
+  final callback;
+  InputForm({required this.fieldName, required this.callback});
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(minWidth: 60),
-          child: SvgPicture.asset(iconLocation),
+          child: SvgPicture.asset(fieldName == 'amount'
+              ? "assets/vectors/rupee.svg"
+              : "assets/vectors/reciept.svg"),
         ),
         SizedBox(width: 10),
         Expanded(
           child: TextFormField(
+            onChanged: (String value) => fieldName == 'amount'
+                ? callback(double.parse(value))
+                : callback(value),
+            inputFormatters: fieldName == 'amount'
+                ? [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^(\d+)?\.?\d{0,2}')),
+                  ]
+                : null,
+            keyboardType: fieldName == 'amount'
+                ? TextInputType.numberWithOptions(decimal: true)
+                : null,
             cursorColor: Colors.white,
             style: TextStyle(
               fontSize: 15,
               color: Colors.white,
             ),
             decoration: InputDecoration(
-              hintText: hintText,
+              hintText:
+                  fieldName == 'amount' ? "0.00" : "Transaction Description",
               hintStyle: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

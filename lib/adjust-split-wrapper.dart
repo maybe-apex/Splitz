@@ -1,29 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:splitz/adjust-split-by-adjustment.dart';
 import 'package:splitz/adjust-split-by-percentage.dart';
-
+import 'package:splitz/cache/enumerators.dart';
 import 'adjust-split-equally.dart';
 import 'adjust-split-by-share.dart';
 import 'adjust-split-unequally.dart';
+import 'logic/transaction-helper.dart';
 
 class AdjustSplitWrapper extends StatefulWidget {
   static String route = "AdjustSplitEqually";
-
   @override
   State<AdjustSplitWrapper> createState() => _AdjustSplitWrapperState();
 }
 
 class _AdjustSplitWrapperState extends State<AdjustSplitWrapper> {
-  String isActive = "Equally";
-  void splitCallback(setActive) {
-    setState(() {
-      isActive = setActive;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final transactionHelper = Provider.of<TransactionHelper>(context);
+    final currentSplitType = transactionHelper.currentSplit;
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -48,19 +44,19 @@ class _AdjustSplitWrapperState extends State<AdjustSplitWrapper> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     FilterButton(
-                      title: "Equally",
-                      isActive: isActive,
-                      callback: splitCallback,
+                      splitType: SplitType.Equally,
+                      currentSplitType: currentSplitType,
+                      callback: transactionHelper.setSplitType,
                     ),
                     FilterButton(
-                      title: "Unequally",
-                      isActive: isActive,
-                      callback: splitCallback,
+                      splitType: SplitType.Unequally,
+                      currentSplitType: currentSplitType,
+                      callback: transactionHelper.setSplitType,
                     ),
                     FilterButton(
-                      title: "By Share",
-                      isActive: isActive,
-                      callback: splitCallback,
+                      splitType: SplitType.Shares,
+                      currentSplitType: currentSplitType,
+                      callback: transactionHelper.setSplitType,
                     ),
                   ],
                 ),
@@ -68,25 +64,25 @@ class _AdjustSplitWrapperState extends State<AdjustSplitWrapper> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     FilterButton(
-                      title: "By Percentage",
-                      isActive: isActive,
-                      callback: splitCallback,
+                      splitType: SplitType.Percentage,
+                      currentSplitType: currentSplitType,
+                      callback: transactionHelper.setSplitType,
                     ),
                     FilterButton(
-                      title: "By Adjustment",
-                      isActive: isActive,
-                      callback: splitCallback,
+                      splitType: SplitType.Adjustment,
+                      currentSplitType: currentSplitType,
+                      callback: transactionHelper.setSplitType,
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                isActive == "Equally"
+                currentSplitType == SplitType.Equally
                     ? AdjustSplitEqually()
-                    : isActive == "By Share"
+                    : currentSplitType == SplitType.Shares
                         ? AdjustSplitByShare()
-                        : isActive == "Unequally"
+                        : currentSplitType == SplitType.Unequally
                             ? AdjustSplitUnequally()
-                            : isActive == "By Percentage"
+                            : currentSplitType == SplitType.Percentage
                                 ? AdjustSplitByPercentage()
                                 : AdjustSplitByAdjustment(),
               ],
@@ -99,21 +95,23 @@ class _AdjustSplitWrapperState extends State<AdjustSplitWrapper> {
 }
 
 class FilterButton extends StatelessWidget {
-  final String title, isActive;
+  final SplitType splitType, currentSplitType;
   final callback;
   FilterButton(
-      {required this.title, required this.isActive, required this.callback});
+      {required this.splitType,
+      required this.callback,
+      required this.currentSplitType});
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => callback(title),
+      onTap: () => callback(splitType),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       hoverColor: Colors.transparent,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          boxShadow: isActive == title
+          boxShadow: splitType == currentSplitType
               ? [
                   BoxShadow(
                       color: Color(0xffA1A1A1).withOpacity(0.45),
@@ -128,9 +126,11 @@ class FilterButton extends StatelessWidget {
         ),
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Text(
-          title,
+          getSplitNameByType(splitType),
           style: TextStyle(
-            color: isActive == title ? Colors.white : Color(0xffA1A1A1),
+            color: splitType == currentSplitType
+                ? Colors.white
+                : Color(0xffA1A1A1),
             fontWeight: FontWeight.bold,
           ),
         ),

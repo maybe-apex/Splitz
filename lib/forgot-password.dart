@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'cache/constants.dart';
-import 'cache/data-processing.dart';
 
 TextEditingController emailController = TextEditingController();
 
@@ -114,29 +112,30 @@ class ForgotPassword extends StatelessWidget {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () async {
-                                final auth = FirebaseAuth.instance;
-                                if (emailValidator(emailController.text) ==
-                                    null) {
-                                  showSnackBar(context,
-                                      'Reset email has been sent to your email');
-                                  await auth.sendPasswordResetEmail(
-                                      email: emailController.text);
-                                } else
-                                  showSnackBar(context,
-                                      'Please enter valid email address.');
-                              },
+                              // onPressed: () async {
+                              //   final auth = FirebaseAuth.instance;
+                              //   if (emailValidator(emailController.text) ==
+                              //       null) {
+                              //     showSnackBar(context,
+                              //         'Reset email has been sent to your email');
+                              //     await auth.sendPasswordResetEmail(
+                              //         email: emailController.text);
+                              //   } else
+                              //     showSnackBar(context,
+                              //         'Please enter valid email address.');
+                              // },
+                              onPressed: () => Navigator.pop(context),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(35),
                                 ),
                                 shadowColor: Colors.white,
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 110, vertical: 15),
+                                    horizontal: 20, vertical: 15),
                                 primary: kGreen,
                               ),
                               child: Text(
-                                "Sign up",
+                                "Reset my password",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,

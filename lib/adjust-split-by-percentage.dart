@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:splitz/cache/enumerators.dart';
+import 'package:splitz/forgot-password.dart';
 
 import 'cache/constants.dart';
+import 'logic/transaction-helper.dart';
+import 'models/general-users.dart';
 
 class AdjustSplitByPercentage extends StatefulWidget {
   @override
@@ -11,48 +16,31 @@ class AdjustSplitByPercentage extends StatefulWidget {
 }
 
 class _AdjustSplitByPercentageState extends State<AdjustSplitByPercentage> {
-  Map<String, bool> activeUsers = {
-    "Ananya Palla": true,
-    "Vivek Patel": true,
-    "Bhavya Mishra": false
-  };
-
-  void userCallback(String name) {
-    setState(() {
-      activeUsers[name] = !activeUsers[name]!;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final transactionHelper = Provider.of<TransactionHelper>(context);
+    final List<GeneralUser> _involvedUsers = transactionHelper.involvedUsers;
+    final _totalAmount = transactionHelper.totalAmount;
+    final _ledger = transactionHelper.percentageLedger;
+    final _percentageFilled =
+        _ledger.values.reduce((value, element) => value + element);
+    final _percentageLeft = 100 - _percentageFilled;
     return Column(
       children: [
-        Column(
-          children: [
-            UserTab(
-              image: "assets/vectors/female-avatar-1.svg",
-              name: "Ananya Palla",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/male-avatar-1.svg",
-              name: "Vivek Patel",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/female-avatar-2.svg",
-              name: "Bhavya Mishra",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-          ],
+        ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, index) => UserTab(
+            ledger: _ledger,
+            total: _totalAmount,
+            user: _involvedUsers[index],
+            callback: transactionHelper.modifyPercentageLedger,
+          ),
+          itemCount: _involvedUsers.length,
         ),
         Column(
           children: [
             Text(
-              "30% LEFT",
+              "$_percentageLeft% LEFT",
               style: TextStyle(
                 fontFamily: 'playfair',
                 fontSize: 20,
@@ -112,14 +100,15 @@ class BackConfirmButtons extends StatelessWidget {
 }
 
 class UserTab extends StatelessWidget {
-  final String name, image;
-  final Map<String, bool> active;
-  final Function callback;
+  final GeneralUser user;
+  final Map<GeneralUser, double> ledger;
+  final double total;
+  final callback;
   UserTab({
-    required this.image,
-    required this.name,
+    required this.user,
+    required this.total,
+    required this.ledger,
     required this.callback,
-    required this.active,
   });
   @override
   Widget build(BuildContext context) {
@@ -145,7 +134,7 @@ class UserTab extends StatelessWidget {
                     Radius.circular(4),
                   ),
                 ),
-                child: SvgPicture.asset(image),
+                child: SvgPicture.asset(getAvatarByID(user.avatarID)),
               ),
               SizedBox(width: 15),
               Padding(
@@ -154,14 +143,14 @@ class UserTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      user.name,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: kOffWhite),
                     ),
                     Text(
-                      "₹15",
+                      "₹${total * double.parse(ledger[user].toString()) / 100}",
                       style: TextStyle(
                         fontFamily: 'playfair',
                         color: kOffWhite,
@@ -177,14 +166,36 @@ class UserTab extends StatelessWidget {
               child: Row(
                 children: [
                   ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 15),
-                    child: TextField(
+                    constraints: BoxConstraints(maxWidth: 30),
+                    child: TextFormField(
+                      maxLength: 3,
+                      textAlign: TextAlign.center,
+                      initialValue: ledger[user].toString(),
+                      onChanged: (String per) {
+                        if (per == '') per = '0';
+                        final percentage = double.parse(per);
+                        if (percentage < 0 || percentage > 100)
+                          showSnackBar(
+                              context, 'Please input a valid percentage');
+                        else
+                          callback(user, percentage);
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       cursorColor: Colors.white,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: Colors.white,
                       ),
                       decoration: InputDecoration(
+                        hintText: '0',
+                        hintStyle: TextStyle(
+                          color: kOffWhite,
+                        ),
+                        counterText: '',
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xffA1A1A1),

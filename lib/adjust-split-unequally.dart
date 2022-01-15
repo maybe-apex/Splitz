@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import 'cache/constants.dart';
+import 'cache/enumerators.dart';
+import 'logic/transaction-helper.dart';
+import 'models/general-users.dart';
 
 class AdjustSplitUnequally extends StatefulWidget {
   @override
@@ -10,48 +14,29 @@ class AdjustSplitUnequally extends StatefulWidget {
 }
 
 class _AdjustSplitUnequallyState extends State<AdjustSplitUnequally> {
-  Map<String, bool> activeUsers = {
-    "Ananya Palla": true,
-    "Vivek Patel": true,
-    "Bhavya Mishra": false
-  };
-
-  void userCallback(String name) {
-    setState(() {
-      activeUsers[name] = !activeUsers[name]!;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final transactionHelper = Provider.of<TransactionHelper>(context);
+    final List<GeneralUser> _involvedUsers = transactionHelper.involvedUsers;
+    final _totalAmount = transactionHelper.totalAmount;
+    final _ledger = transactionHelper.unequalLedger;
+    final _amountLeft = _totalAmount -
+        _ledger.values.reduce((value, element) => value + element);
     return Column(
       children: [
-        Column(
-          children: [
-            UserTab(
-              image: "assets/vectors/female-avatar-1.svg",
-              name: "Ananya Palla",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/male-avatar-1.svg",
-              name: "Vivek Patel",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/female-avatar-2.svg",
-              name: "Bhavya Mishra",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-          ],
+        ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, index) => UserTab(
+            ledger: _ledger,
+            user: _involvedUsers[index],
+            callback: transactionHelper.modifyUnequalLedger,
+          ),
+          itemCount: _involvedUsers.length,
         ),
         Column(
           children: [
             Text(
-              "₹50 OF ₹120\n₹70 OF ₹120 LEFT",
+              "₹$_amountLeft OF ₹$_totalAmount LEFT",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'playfair',
@@ -112,14 +97,13 @@ class BackConfirmButtons extends StatelessWidget {
 }
 
 class UserTab extends StatelessWidget {
-  final String name, image;
-  final Map<String, bool> active;
-  final Function callback;
+  final GeneralUser user;
+  final Map<GeneralUser, double> ledger;
+  final callback;
   UserTab({
-    required this.image,
-    required this.name,
+    required this.user,
+    required this.ledger,
     required this.callback,
-    required this.active,
   });
   @override
   Widget build(BuildContext context) {
@@ -145,7 +129,7 @@ class UserTab extends StatelessWidget {
                     Radius.circular(4),
                   ),
                 ),
-                child: SvgPicture.asset(image),
+                child: SvgPicture.asset(getAvatarByID(user.avatarID)),
               ),
               SizedBox(width: 15),
               Padding(
@@ -154,14 +138,14 @@ class UserTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      user.name,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: kOffWhite),
                     ),
                     Text(
-                      "₹15",
+                      "₹${ledger[user]}",
                       style: TextStyle(
                         fontFamily: 'playfair',
                         color: kOffWhite,
@@ -185,8 +169,22 @@ class UserTab extends StatelessWidget {
                     ),
                   ),
                   ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 40),
-                    child: TextField(
+                    constraints: BoxConstraints(maxWidth: 60),
+                    child: TextFormField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^(\d+)?\.?\d{0,2}')),
+                      ],
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      initialValue:
+                          ledger[user] != 0 ? ledger[user].toString() : '',
+                      onChanged: (amount) {
+                        if (double.tryParse(amount) == null)
+                          callback(user, 0.00);
+                        else
+                          callback(user, double.parse(amount));
+                      },
                       textAlign: TextAlign.center,
                       cursorColor: Colors.white,
                       style: TextStyle(

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:splitz/cache/enumerators.dart';
+import 'package:splitz/models/general-users.dart';
 
 import 'cache/constants.dart';
+import 'logic/transaction-helper.dart';
 
 class AdjustSplitEqually extends StatefulWidget {
   @override
@@ -9,48 +13,30 @@ class AdjustSplitEqually extends StatefulWidget {
 }
 
 class _AdjustSplitEquallyState extends State<AdjustSplitEqually> {
-  Map<String, bool> activeUsers = {
-    "Ananya Palla": true,
-    "Vivek Patel": true,
-    "Bhavya Mishra": false
-  };
-
-  void userCallback(String name) {
-    setState(() {
-      activeUsers[name] = !activeUsers[name]!;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final transactionHelper = Provider.of<TransactionHelper>(context);
+    final List<GeneralUser> _involvedUsers = transactionHelper.involvedUsers;
+    final _totalAmount = transactionHelper.totalAmount;
+    final _ledger = transactionHelper.equalLedger;
+    final _setSplit = transactionHelper.setSplitType;
     return Column(
       children: [
-        Column(
-          children: [
-            UserTab(
-              image: "assets/vectors/female-avatar-1.svg",
-              name: "Ananya Palla",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/male-avatar-1.svg",
-              name: "Vivek Patel",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-            UserTab(
-              image: "assets/vectors/female-avatar-2.svg",
-              name: "Bhavya Mishra",
-              active: activeUsers,
-              callback: userCallback,
-            ),
-          ],
+        ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, index) => UserTab(
+            user: _involvedUsers[index],
+            callback: transactionHelper.modifyEqualLedger,
+            active: _ledger.contains(_involvedUsers[index]),
+          ),
+          itemCount: _involvedUsers.length,
         ),
         Column(
           children: [
             Text(
-              "₹60 PER PERSON",
+              _ledger.length > 0
+                  ? "${(_totalAmount / _ledger.length).toStringAsFixed(2)} per person"
+                  : 'Please Select Users',
               style: TextStyle(
                 fontFamily: 'playfair',
                 fontSize: 20,
@@ -62,9 +48,12 @@ class _AdjustSplitEquallyState extends State<AdjustSplitEqually> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                BackConfirmButtons(label: "Back"),
+                BackConfirmButtons(
+                  label: "Back",
+                  setSplit: _setSplit,
+                ),
                 SizedBox(width: 50),
-                BackConfirmButtons(label: "Confirm"),
+                BackConfirmButtons(label: "Confirm", setSplit: _setSplit),
               ],
             ),
           ],
@@ -76,11 +65,17 @@ class _AdjustSplitEquallyState extends State<AdjustSplitEqually> {
 
 class BackConfirmButtons extends StatelessWidget {
   final String label;
-  BackConfirmButtons({required this.label});
+  final setSplit;
+  BackConfirmButtons({required this.label, required this.setSplit});
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pop(context),
+      onTap: () {
+        if (label == 'Back') {
+          setSplit(SplitType.Equally);
+          Navigator.pop(context);
+        }
+      },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10),
         decoration: BoxDecoration(
@@ -110,12 +105,11 @@ class BackConfirmButtons extends StatelessWidget {
 }
 
 class UserTab extends StatelessWidget {
-  final String name, image;
-  final Map<String, bool> active;
-  final Function callback;
+  final GeneralUser user;
+  final callback;
+  final bool active;
   UserTab({
-    required this.image,
-    required this.name,
+    required this.user,
     required this.callback,
     required this.active,
   });
@@ -143,13 +137,13 @@ class UserTab extends StatelessWidget {
                     Radius.circular(4),
                   ),
                 ),
-                child: SvgPicture.asset(image),
+                child: SvgPicture.asset(getAvatarByID(user.avatarID)),
               ),
               SizedBox(width: 15),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  name,
+                  user.name,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
@@ -161,8 +155,8 @@ class UserTab extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
-                onTap: () => callback(name),
-                child: active[name]!
+                onTap: () => callback(user),
+                child: active
                     ? SvgPicture.asset("assets/vectors/radio-button-filled.svg")
                     : SvgPicture.asset(
                         "assets/vectors/radio-button-hollow.svg")),

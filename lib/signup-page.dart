@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:splitz/forgot-password.dart';
 import 'cache/constants.dart';
 import 'cache/data-processing.dart';
 
@@ -28,8 +29,6 @@ class _SingUpPageState extends State<SingUpPage> {
       setState(() {
         // loading = true;
       });
-      print(emailController.text);
-      print(passwordController.text);
       final newUser = await auth.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
       if (newUser.user != null) {
@@ -39,7 +38,6 @@ class _SingUpPageState extends State<SingUpPage> {
         });
         int contactNumber =
             parseIntFromString('${contactNumberController.text}');
-        print(contactNumber);
         await firestore.collection('/Users').doc(uid).set({
           'FirstName': firstNameController.text,
           'LastName': lastNameController.text,
@@ -49,9 +47,7 @@ class _SingUpPageState extends State<SingUpPage> {
         Navigator.pop(context);
       }
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        // loading = false;
-      });
+      showSnackBar(context, e.message.toString());
     }
   }
 
@@ -307,6 +303,7 @@ class _SingUpPageState extends State<SingUpPage> {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
+                              // onPressed: singUpCallback,
                               onPressed: singUpCallback,
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
