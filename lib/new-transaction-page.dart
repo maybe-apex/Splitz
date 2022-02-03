@@ -11,6 +11,8 @@ import 'package:splitz/cache/local-data.dart';
 import 'package:splitz/logic/transaction-helper.dart';
 import 'package:splitz/models/general-users.dart';
 
+import 'models/transactions.dart';
+
 class NewTransaction extends StatefulWidget {
   static String route = "NewTransaction";
 
@@ -33,26 +35,51 @@ class _NewTransactionState extends State<NewTransaction> {
       });
     }
   }
-  // void addTransaction() {
-  //   transactions.add(
-  //     GeneralTransaction(
-  //       creator: pu,
-  //       title: th.transactionDescriptionController.text,
-  //       amount: double.parse(th.transactionAmountController.text),
-  //       timeStamp: _pickedDate,
-  //       involvedUsers: th.involvedUsers,
-  //       splitType: SplitType.Equally,
-  //       settlements: [],
-  //       uid: '567567',
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
     final transactionHelper = Provider.of<TransactionHelper>(context);
     final _currentSplit = transactionHelper.currentSplit;
+    final _transactionTitle = transactionHelper.transactionTitle;
+    final _totalAmount = transactionHelper.totalAmount;
+    final _splitType = transactionHelper.currentSplit;
+    final TextEditingController _suggestionsController =
+        TextEditingController();
     List<GeneralUser> _involvedUsers = transactionHelper.involvedUsers;
+
+    List<Settlement> getSettlement(double totalAmount, SplitType splitType,
+        List<GeneralUser> involvedUsers) {
+      if (splitType == SplitType.Equally) {
+        final ledger = transactionHelper.equalLedger;
+        final splitAmount = totalAmount / ledger.length;
+        return ledger
+            .map((user) => Settlement(
+                lender: pu,
+                debtor: user,
+                amount: splitAmount,
+                transactionUID: '1234'))
+            .toList();
+      }
+      return [];
+    }
+
+    void addTransaction() {
+      transactions.add(
+        GeneralTransaction(
+          creator: pu,
+          title: _transactionTitle,
+          amount: _totalAmount,
+          timeStamp: _pickedDate,
+          involvedUsers: _involvedUsers,
+          splitType: SplitType.Equally,
+          settlements:
+              getSettlement(_totalAmount, _currentSplit, _involvedUsers),
+          uid: '567567',
+        ),
+      );
+      print(transactions.last.settlements);
+    }
+
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -75,8 +102,11 @@ class _NewTransactionState extends State<NewTransaction> {
                     ),
                   ),
                   SizedBox(height: 30),
-                  TypeAheadField<GeneralUser?>(
+                  TypeAheadFormField<GeneralUser?>(
+                    hideOnEmpty: true,
+                    minCharsForSuggestions: 1,
                     textFieldConfiguration: TextFieldConfiguration(
+                      controller: _suggestionsController,
                       maxLines: null,
                       style: TextStyle(color: kOffWhite),
                       cursorColor: kGrey,
@@ -147,9 +177,11 @@ class _NewTransactionState extends State<NewTransaction> {
                       textColor: kOffWhite,
                       title: Text('No User Found'),
                     ),
-                    onSuggestionSelected: (GeneralUser? selectedUser) =>
-                        Provider.of<TransactionHelper>(context, listen: false)
-                            .addInvolvedUsers(selectedUser!),
+                    onSuggestionSelected: (GeneralUser? selectedUser) {
+                      _suggestionsController.clear();
+                      Provider.of<TransactionHelper>(context, listen: false)
+                          .addInvolvedUsers(selectedUser!);
+                    },
                   ),
                   Container(
                     width: double.infinity,
@@ -289,12 +321,13 @@ class _NewTransactionState extends State<NewTransaction> {
                     children: [
                       ExitConfirmButtons(
                         label: "Exit",
-                        callback: () => {},
+                        callback: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
                       ExitConfirmButtons(
                         label: "Confirm Transaction",
-                        // callback: addTransaction,
-                        callback: () {},
+                        callback: addTransaction,
                       ),
                     ],
                   )

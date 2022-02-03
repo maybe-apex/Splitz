@@ -58,8 +58,10 @@ class TransactionHelper extends ChangeNotifier {
   }
 
   void modifyEqualLedger(user) {
-    if (_equalLedger.contains(user)) _equalLedger.remove(user);
-    _equalLedger.add(user);
+    if (_equalLedger.contains(user))
+      _equalLedger.remove(user);
+    else
+      _equalLedger.add(user);
     notifyListeners();
   }
 

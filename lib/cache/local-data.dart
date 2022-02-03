@@ -53,7 +53,7 @@ PrimaryUser pu = PrimaryUser(
   avatarID: AvatarID.Male2,
 );
 
-List<GeneralTransaction> transactions = <GeneralTransaction>[demoTransaction];
+List<GeneralTransaction> transactions = <GeneralTransaction>[];
 
 GeneralTransaction demoTransaction = GeneralTransaction(
   creator: pu,

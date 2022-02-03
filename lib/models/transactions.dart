@@ -9,15 +9,16 @@ class GeneralTransaction {
   List<GeneralUser> involvedUsers;
   SplitType splitType;
   List<Settlement> settlements;
-  GeneralTransaction(
-      {required this.creator,
-      required this.title,
-      required this.amount,
-      required this.timeStamp,
-      required this.involvedUsers,
-      required this.splitType,
-      required this.settlements,
-      required this.uid});
+  GeneralTransaction({
+    required this.creator,
+    required this.title,
+    required this.amount,
+    required this.timeStamp,
+    required this.involvedUsers,
+    required this.splitType,
+    required this.settlements,
+    required this.uid,
+  });
 
   @override
   String toString() {

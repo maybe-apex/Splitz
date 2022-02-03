@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:splitz/cache/local-data.dart';
 import 'cache/constants.dart';
 import 'new-transaction-page.dart';
 
@@ -88,9 +90,12 @@ class SecondaryUserProfilePage extends StatelessWidget {
                               Radius.circular(10),
                             ),
                           ),
-                          child: SvgPicture.asset(
-                            "assets/vectors/male-avatar-1.svg",
-                            height: 120,
+                          child: Hero(
+                            tag: suVivek.name,
+                            child: SvgPicture.asset(
+                              "assets/vectors/male-avatar-1.svg",
+                              height: 120,
+                            ),
                           ),
                         ),
                         SizedBox(width: 15),

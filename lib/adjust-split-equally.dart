@@ -71,10 +71,8 @@ class BackConfirmButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (label == 'Back') {
-          setSplit(SplitType.Equally);
-          Navigator.pop(context);
-        }
+        setSplit(SplitType.Equally);
+        Navigator.pop(context);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10),

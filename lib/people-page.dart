@@ -207,21 +207,24 @@ class UserTab extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          color: Color(0xffA1A1A1).withOpacity(0.25),
-                          blurRadius: 4,
-                          offset: Offset(0, 4)),
-                    ],
-                    color: kOffWhite,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(4),
+                Hero(
+                  tag: '$name',
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color(0xffA1A1A1).withOpacity(0.25),
+                            blurRadius: 4,
+                            offset: Offset(0, 4)),
+                      ],
+                      color: kOffWhite,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(4),
+                      ),
                     ),
+                    child: SvgPicture.asset(image),
                   ),
-                  child: SvgPicture.asset(image),
                 ),
                 SizedBox(width: 15),
                 Padding(
